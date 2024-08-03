@@ -25,7 +25,8 @@ if (flutterVersionName == null) {
 android {
     namespace "com.example.native_device_features"
     compileSdkVersion flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+    // ndkVersion flutter.ndkVersion
+    compileSdkVersion 34
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
