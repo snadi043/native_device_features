@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:native_device_features/screens/add_places.dart';
 import 'package:native_device_features/widgets/places_list.dart';
 
 class Places extends StatelessWidget {
@@ -11,7 +12,10 @@ class Places extends StatelessWidget {
         title: const Text('Your Places'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (ctx) => const AddPlaces()));
+            },
             icon: const Icon(Icons.add),
           )
         ],
