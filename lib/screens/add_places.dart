@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:native_device_features/providers/places_provider.dart';
+import 'package:native_device_features/widgets/image_input.dart';
 
-class AddPlaces extends StatefulWidget {
+class AddPlaces extends ConsumerStatefulWidget {
   const AddPlaces({super.key});
 
   @override
-  State<StatefulWidget> createState() {
+  ConsumerState<AddPlaces> createState() {
     return _AddPlaces();
   }
 }
 
-class _AddPlaces extends State<AddPlaces> {
+class _AddPlaces extends ConsumerState<AddPlaces> {
   final _titleController = TextEditingController();
+
+  void _savePlaces() {
+    final enteredTitle = _titleController.text;
+
+    if (enteredTitle.isEmpty) {
+      return;
+    }
+    ref.read(PlacesNotifier().placesProvider.notifier).addPlaces(enteredTitle);
+    Navigator.of(context).pop();
+  }
 
   @override
   void dispose() {
@@ -34,9 +47,10 @@ class _AddPlaces extends State<AddPlaces> {
               style:
                   TextStyle(color: Theme.of(context).colorScheme.onBackground),
             ),
+            const ImageInput(),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: _savePlaces,
                 icon: const Icon(Icons.add),
                 label: const Text('Add Places')),
           ],
