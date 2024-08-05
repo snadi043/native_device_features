@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:native_device_features/providers/places_provider.dart';
-import 'package:native_device_features/widgets/image_input.dart';
 
-class AddPlaces extends ConsumerStatefulWidget {
-  const AddPlaces({super.key});
+import 'package:native_device_features/providers/user_places.dart';
+
+class AddPlaceScreen extends ConsumerStatefulWidget {
+  const AddPlaceScreen({super.key});
 
   @override
-  ConsumerState<AddPlaces> createState() {
-    return _AddPlaces();
+  ConsumerState<AddPlaceScreen> createState() {
+    return _AddPlaceScreenState();
   }
 }
 
-class _AddPlaces extends ConsumerState<AddPlaces> {
+class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
   final _titleController = TextEditingController();
 
-  void _savePlaces() {
+  void _savePlace() {
     final enteredTitle = _titleController.text;
 
     if (enteredTitle.isEmpty) {
       return;
     }
-    ref.read(PlacesNotifier().placesProvider.notifier).addPlaces(enteredTitle);
+
+    ref.read(userPlacesProvider.notifier).addPlace(enteredTitle);
+
     Navigator.of(context).pop();
   }
 
@@ -35,7 +37,7 @@ class _AddPlaces extends ConsumerState<AddPlaces> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Places'),
+        title: const Text('Add new Place'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(12),
@@ -44,15 +46,16 @@ class _AddPlaces extends ConsumerState<AddPlaces> {
             TextField(
               decoration: const InputDecoration(labelText: 'Title'),
               controller: _titleController,
-              style:
-                  TextStyle(color: Theme.of(context).colorScheme.onBackground),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onBackground,
+              ),
             ),
-            const ImageInput(),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-                onPressed: _savePlaces,
-                icon: const Icon(Icons.add),
-                label: const Text('Add Places')),
+              onPressed: _savePlace,
+              icon: const Icon(Icons.add),
+              label: const Text('Add Place'),
+            ),
           ],
         ),
       ),
