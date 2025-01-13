@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:native_device_features/models/place.dart';
 
@@ -15,8 +16,8 @@ class UserPlacesNotifier extends StateNotifier<List<Place>> {
 // newPlace takes the newly adding place based on the Place model and then it gets
 // added to the previous exisiting state by doing object destrucutring.
 
-  void addPlaces(String title) {
-    final newPlace = Place(title: title);
+  void addPlaces(String title, File image) {
+    final newPlace = Place(title: title, image: image);
     state = [newPlace, ...state];
   }
 }

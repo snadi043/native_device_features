@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- Add the below first three keys to avoid issues using native camera features in your app -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow the app to pick the Images from your photo library.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow the app to use your mobile camera to click pictures to use in the app.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow your mobile to record the voice while taking  videos.</string>
+	
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:native_device_features/providers/user_places.dart';
@@ -22,17 +23,25 @@ class AddPlaceScreen extends ConsumerStatefulWidget {
 
 //Also here the State is changed to ConsumerState
 class _AddPlaceScreen extends ConsumerState<AddPlaceScreen> {
+  File? _selectedImage;
+
   final _titleInputController = TextEditingController();
 
   void addPlace() {
     final enteredTitle = _titleInputController.text;
+
+    if (enteredTitle.isEmpty || _selectedImage == null) {
+      return;
+    }
 
     //ref property is provided by the riverpod ConsumerState and
     // ref has the read property which accepts a notifier which we
     // created in the user_places provider file and exported from there
     // and from there we can make use of the methods.
 
-    ref.read(userPlaceProvider.notifier).addPlaces(enteredTitle);
+    ref
+        .read(userPlaceProvider.notifier)
+        .addPlaces(enteredTitle, _selectedImage!);
 
     // once the user enters the value they have to be moved to other screen
     // so we use pop() from the navigator.
@@ -62,7 +71,11 @@ class _AddPlaceScreen extends ConsumerState<AddPlaceScreen> {
                 controller: _titleInputController,
               ),
               const SizedBox(height: 8),
-              const ImageInput(),
+              ImageInput(
+                onSelectImage: (image) {
+                  _selectedImage = image;
+                },
+              ),
               const SizedBox(height: 8),
               ElevatedButton.icon(
                 label: const Text('Add Place'),
