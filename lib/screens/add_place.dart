@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:native_device_features/providers/user_places.dart';
 import 'package:native_device_features/widgets/image_input.dart';
+import 'package:native_device_features/widgets/location_input.dart';
 
 //Changing the StatefulWidget to ConsumerStatefulWidget to accept the
 //methods written in the providers file which is based on riverpod state
@@ -76,6 +77,8 @@ class _AddPlaceScreen extends ConsumerState<AddPlaceScreen> {
                   _selectedImage = image;
                 },
               ),
+              const SizedBox(height: 8),
+              const LocationInput(),
               const SizedBox(height: 8),
               ElevatedButton.icon(
                 label: const Text('Add Place'),
