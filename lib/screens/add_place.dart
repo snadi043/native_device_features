@@ -13,7 +13,7 @@ class AddPlaceScreen extends ConsumerStatefulWidget {
   const AddPlaceScreen({super.key});
 
 //once the StatefulWidget is changed to ConsumerStatefulWidget
-// createState accepts its import from ConsumerState so the State is changed
+// createState accepts its state import from ConsumerState so the State is changed
 // to ConsumerState.
 
   @override
