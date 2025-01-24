@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:native_device_features/models/place.dart';
 import 'package:native_device_features/providers/user_places.dart';
 import 'package:native_device_features/widgets/image_input.dart';
 import 'package:native_device_features/widgets/location_input.dart';
@@ -25,13 +26,15 @@ class AddPlaceScreen extends ConsumerStatefulWidget {
 //Also here the State is changed to ConsumerState
 class _AddPlaceScreen extends ConsumerState<AddPlaceScreen> {
   File? _selectedImage;
-
   final _titleInputController = TextEditingController();
+  PickLocation? _selectedLocation;
 
   void addPlace() {
     final enteredTitle = _titleInputController.text;
 
-    if (enteredTitle.isEmpty || _selectedImage == null) {
+    if (enteredTitle.isEmpty ||
+        _selectedImage == null ||
+        _selectedLocation == null) {
       return;
     }
 
@@ -42,7 +45,7 @@ class _AddPlaceScreen extends ConsumerState<AddPlaceScreen> {
 
     ref
         .read(userPlaceProvider.notifier)
-        .addPlaces(enteredTitle, _selectedImage!);
+        .addPlaces(enteredTitle, _selectedImage!, _selectedLocation!);
 
     // once the user enters the value they have to be moved to other screen
     // so we use pop() from the navigator.
@@ -78,7 +81,11 @@ class _AddPlaceScreen extends ConsumerState<AddPlaceScreen> {
                 },
               ),
               const SizedBox(height: 8),
-              const LocationInput(),
+              LocationInput(
+                onSelectLocation: (location) {
+                  _selectedLocation = location;
+                },
+              ),
               const SizedBox(height: 8),
               ElevatedButton.icon(
                 label: const Text('Add Place'),

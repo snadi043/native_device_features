@@ -16,8 +16,8 @@ class UserPlacesNotifier extends StateNotifier<List<Place>> {
 // newPlace takes the newly adding place based on the Place model and then it gets
 // added to the previous exisiting state by doing object destrucutring.
 
-  void addPlaces(String title, File image) {
-    final newPlace = Place(title: title, image: image);
+  void addPlaces(String title, File image, PickLocation location) {
+    final newPlace = Place(title: title, image: image, pickLocation: location);
     state = [newPlace, ...state];
   }
 }

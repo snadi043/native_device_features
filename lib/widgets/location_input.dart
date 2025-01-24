@@ -6,7 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:native_device_features/models/place.dart';
 
 class LocationInput extends StatefulWidget {
-  const LocationInput({super.key});
+  const LocationInput({super.key, required this.onSelectLocation});
+  final void Function(PickLocation location) onSelectLocation;
 
   @override
   State<LocationInput> createState() {
@@ -17,6 +18,16 @@ class LocationInput extends StatefulWidget {
 class _LocationInput extends State<LocationInput> {
   var _isLocationEnabled = false;
   PickLocation? _pickedLocation;
+
+  String get locationImage {
+    if (_pickedLocation == null) {
+      return '';
+    }
+
+    final lat = _pickedLocation!.latitude;
+    final lng = _pickedLocation!.longitude;
+    return 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng=&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:A%7C$lat,$lng&key=AIzaSyBoMMjTdC54L0rctvSz2ZpJq99y3KFOg94';
+  }
 
   void _getCurrentLocation() async {
     Location location = Location();
@@ -57,13 +68,14 @@ class _LocationInput extends State<LocationInput> {
     final response = await http.get(url);
     final result = json.decode(response.body);
     final address = result['results'][0]['formatted_address'];
-    print(address);
 
     setState(() {
       _pickedLocation =
           PickLocation(latitude: lat, longitude: lng, address: address);
       _isLocationEnabled = false;
     });
+
+    widget.onSelectLocation(_pickedLocation!);
   }
 
   @override
@@ -79,6 +91,16 @@ class _LocationInput extends State<LocationInput> {
     if (_isLocationEnabled) {
       locationPreview = const CircularProgressIndicator();
     }
+
+    if (_pickedLocation != null) {
+      Image.network(
+        locationImage,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
