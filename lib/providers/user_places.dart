@@ -12,12 +12,12 @@ class UserPlacesNotifier extends StateNotifier<List<Place>> {
   UserPlacesNotifier() : super(const []);
 
 //addPlaces is the method we want to manage the adding of places feature
-//in the app which expects title as a parameter
+//in the app which expects title and image as a parameters
 // newPlace takes the newly adding place based on the Place model and then it gets
 // added to the previous exisiting state by doing object destrucutring.
 
-  void addPlaces(String title, File image) {
-    final newPlace = Place(title: title, image: image);
+  void addPlaces(String title, File image, PickLocation location) {
+    final newPlace = Place(title: title, image: image, pickLocation: location);
     state = [newPlace, ...state];
   }
 }
