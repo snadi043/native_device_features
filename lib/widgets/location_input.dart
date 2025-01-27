@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:native_device_features/models/place.dart';
+import 'package:native_device_features/screens/map.dart';
+
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationInput extends StatefulWidget {
   const LocationInput({super.key, required this.onSelectLocation});
@@ -62,20 +65,33 @@ class _LocationInput extends State<LocationInput> {
     if (lat == null || lng == null) {
       return;
     }
+  }
 
+  void _saveLocation(latitude, longitude) async {
     final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=AIzaSyBoMMjTdC54L0rctvSz2ZpJq99y3KFOg94');
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=AIzaSyBoMMjTdC54L0rctvSz2ZpJq99y3KFOg94');
     final response = await http.get(url);
     final result = json.decode(response.body);
     final address = result['results'][0]['formatted_address'];
 
     setState(() {
-      _pickedLocation =
-          PickLocation(latitude: lat, longitude: lng, address: address);
+      _pickedLocation = PickLocation(
+          latitude: latitude, longitude: longitude, address: address);
       _isLocationEnabled = false;
     });
 
     widget.onSelectLocation(_pickedLocation!);
+  }
+
+  Future<void> _pickOnMap() async {
+    final pickedLocation = await Navigator.of(context)
+        .push<LatLng>(MaterialPageRoute(builder: (ctx) => const MapsScreen()));
+
+    if (pickedLocation == null) {
+      return;
+    }
+
+    _saveLocation(pickedLocation.latitude, pickedLocation.longitude);
   }
 
   @override
@@ -124,7 +140,7 @@ class _LocationInput extends State<LocationInput> {
                 icon: const Icon(Icons.location_city),
                 label: const Text('Pick your location')),
             TextButton.icon(
-                onPressed: () {},
+                onPressed: _pickOnMap,
                 icon: const Icon(Icons.map),
                 label: const Text('Pick from map'))
           ],
