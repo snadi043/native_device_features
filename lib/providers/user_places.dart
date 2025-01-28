@@ -30,22 +30,24 @@ class UserPlacesNotifier extends StateNotifier<List<Place>> {
     final imagePath = await image.copy(
         '${appDir.path}/$filename'); // This is the final file directory to save the images locally on the device and it is passed to image property on the provider.
 
-    await sql.openDatabase('user_places',
-        version: 1, onCreate: ((db, version) => async {
-          await db.execute('CREATE TABLE user_places (id INTEGER PRIMARY KEY, title TEXT, image TEXT, lat REAL, lng REAL, address TEXT)'),
-        }));
-
     final newPlace =
         Place(title: title, image: imagePath, pickLocation: location);
     state = [newPlace, ...state];
 
+    // Initializing the database and the database path from the extension methods
+    //provided by the SQFLITE packagees which are imported in the lines 8 & 9.
     final dbPath = await sql.getDatabasesPath();
-    final db = await sql.openDatabase(dbPath, onCreate: (db, version) => {
-      db.execute('CREATE TABLE user_places(id INTEGER PRIMARY KEY, title TEXT, image TEXT, lat REAL. lng REAL, address TEXT'),
-    },
-    version : 1,
+    final db = await sql.openDatabase(
+      dbPath,
+      onCreate: (db, version) => {
+        db.execute(
+            'CREATE TABLE user_places(id INTEGER PRIMARY KEY, title TEXT, image TEXT, lat REAL. lng REAL, address TEXT'),
+      },
+      version: 1,
     );
-    
+
+    // inserting the data into the database tables using sql quieres.
+    //refer to the SQFLite flutter package for more details.
     await db.insert('user_places', {
       'id': newPlace.id,
       'title': newPlace.title,
