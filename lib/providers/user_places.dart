@@ -5,6 +5,9 @@ import 'package:native_device_features/models/place.dart';
 import 'package:path_provider/path_provider.dart' as syspaths;
 import 'package:path/path.dart' as localpath;
 
+import 'package:sqflite/sqflite.dart' as sql;
+import 'package:sqflite/sqlite_api.dart';
+
 //StateNotifier is the riverpod provided generic type and in this case since we
 //expect places of the type Place defined in the model Place which is being used here
 // as the generic data type.
@@ -27,9 +30,30 @@ class UserPlacesNotifier extends StateNotifier<List<Place>> {
     final imagePath = await image.copy(
         '${appDir.path}/$filename'); // This is the final file directory to save the images locally on the device and it is passed to image property on the provider.
 
+    await sql.openDatabase('user_places',
+        version: 1, onCreate: ((db, version) => async {
+          await db.execute('CREATE TABLE user_places (id INTEGER PRIMARY KEY, title TEXT, image TEXT, lat REAL, lng REAL, address TEXT)'),
+        }));
+
     final newPlace =
         Place(title: title, image: imagePath, pickLocation: location);
     state = [newPlace, ...state];
+
+    final dbPath = await sql.getDatabasesPath();
+    final db = await sql.openDatabase(dbPath, onCreate: (db, version) => {
+      db.execute('CREATE TABLE user_places(id INTEGER PRIMARY KEY, title TEXT, image TEXT, lat REAL. lng REAL, address TEXT'),
+    },
+    version : 1,
+    );
+    
+    await db.insert('user_places', {
+      'id': newPlace.id,
+      'title': newPlace.title,
+      'image': newPlace.image.path,
+      'lat': newPlace.pickLocation.latitude,
+      'lng': newPlace.pickLocation.longitude,
+      'address': newPlace.pickLocation.address,
+    });
   }
 }
 
