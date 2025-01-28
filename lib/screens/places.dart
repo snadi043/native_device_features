@@ -8,33 +8,59 @@ import 'package:native_device_features/widgets/places_list.dart';
 // managed by the riverpod based user_places provider so changed the StatelessWidget
 // to ConsumerState.
 
-class PlacesScreen extends ConsumerWidget {
+class PlacesScreen extends ConsumerStatefulWidget {
   const PlacesScreen({super.key});
+
+  @override
+  ConsumerState<PlacesScreen> createState() {
+    return _PlacesScreenState();
+  }
+}
+
+class _PlacesScreenState extends ConsumerState<PlacesScreen> {
+  late Future<void> _placesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _placesFuture = ref.read(userPlaceProvider.notifier).getPlaces();
+  }
 
 // Here in the Build method we can have access to ref property of type WidgetRef
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     //so the ref property has the watch() which helpd us to listen to the
     // state changes in the provider.
     final userPlaces = ref.watch(userPlaceProvider);
+
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Your Places'),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (ctx) => const AddPlaceScreen()),
-                  );
-                },
-                icon: const Icon(Icons.add)),
-          ],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(8),
-          child: PlacesList(
-            places: userPlaces,
+      appBar: AppBar(
+        title: const Text('Your Places'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => const AddPlaceScreen(),
+                ),
+              );
+            },
           ),
-        ));
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: FutureBuilder(
+          future: _placesFuture,
+          builder: (context, snapshot) =>
+              snapshot.connectionState == ConnectionState.waiting
+                  ? const Center(child: CircularProgressIndicator())
+                  : PlacesList(
+                      places: userPlaces,
+                    ),
+        ),
+      ),
+    );
   }
 }
