@@ -63,7 +63,7 @@ class UserPlacesNotifier extends StateNotifier<List<Place>> {
     });
   }
 
-  void getPlaces() async {
+  Future<void> getPlaces() async {
     final db = await _getDatabase();
     final data = await db.query('user_places');
     final places = data
