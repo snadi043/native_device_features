@@ -8,6 +8,22 @@ import 'package:path/path.dart' as localpath;
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:sqflite/sqlite_api.dart';
 
+Future<Database> _getDatabase() async {
+  // Initializing the database and the database path from the extension methods
+  //provided by the SQFLITE packagees which are imported in the lines 8 & 9 and
+  //making it as reusbale function with the return type of Future with Database.
+  final dbPath = await sql.getDatabasesPath();
+  final db = await sql.openDatabase(
+    dbPath,
+    onCreate: (db, version) => {
+      db.execute(
+          'CREATE TABLE user_places(id INTEGER PRIMARY KEY, title TEXT, image TEXT, lat REAL. lng REAL, address TEXT'),
+    },
+    version: 1,
+  );
+  return db;
+}
+
 //StateNotifier is the riverpod provided generic type and in this case since we
 //expect places of the type Place defined in the model Place which is being used here
 // as the generic data type.
@@ -34,20 +50,9 @@ class UserPlacesNotifier extends StateNotifier<List<Place>> {
         Place(title: title, image: imagePath, pickLocation: location);
     state = [newPlace, ...state];
 
-    // Initializing the database and the database path from the extension methods
-    //provided by the SQFLITE packagees which are imported in the lines 8 & 9.
-    final dbPath = await sql.getDatabasesPath();
-    final db = await sql.openDatabase(
-      dbPath,
-      onCreate: (db, version) => {
-        db.execute(
-            'CREATE TABLE user_places(id INTEGER PRIMARY KEY, title TEXT, image TEXT, lat REAL. lng REAL, address TEXT'),
-      },
-      version: 1,
-    );
-
     // inserting the data into the database tables using sql quieres.
     //refer to the SQFLite flutter package for more details.
+    final db = await _getDatabase();
     await db.insert('user_places', {
       'id': newPlace.id,
       'title': newPlace.title,
@@ -56,6 +61,22 @@ class UserPlacesNotifier extends StateNotifier<List<Place>> {
       'lng': newPlace.pickLocation.longitude,
       'address': newPlace.pickLocation.address,
     });
+  }
+
+  void getPlaces() async {
+    final db = await _getDatabase();
+    final data = await db.query('user_places');
+    final places = data
+        .map((row) => Place(
+            id: row['id'] as String,
+            title: row['title'] as String,
+            image: File(row['image'] as String),
+            pickLocation: PickLocation(
+                latitude: row['latitude'] as double,
+                longitude: row['longitude'] as double,
+                address: row['address'] as String)))
+        .toList();
+    state = places;
   }
 }
 
